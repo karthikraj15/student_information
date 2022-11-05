@@ -80,6 +80,6 @@ app.use('/courses',courses);
 app.use('/',users);
 
 
-//hello
+
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
