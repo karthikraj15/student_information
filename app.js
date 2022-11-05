@@ -26,7 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')))
 
-const dbUrl = process.env.DB_URL || 'mongodb+srv://karthikraj15:Mongo%40123@cluster0.dsjkh4z.mongodb.net/studentInformation';
+const dbUrl = process.env.DB_URL;
 mongoose.connect(dbUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
