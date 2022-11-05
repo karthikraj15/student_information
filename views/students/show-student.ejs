@@ -1,0 +1,27 @@
+<% layout('layouts/main')%>
+
+<div class="col-3">
+    <a onclick="history.back()" type="button" class="btn text-white align-self-center"
+        style="background-color: #563d7c ">
+        <i class="bi bi-backspace-fill"></i> Go Back!</a>
+</div>
+<br>
+<table>
+    <tr>
+<h1><%= s.name %></h1><br>
+            <h2><%= s.usn %></h2>
+            <h4><%= s.sem %></h4>
+            <h4><%= s.dob %></h4>
+            <h4><%= s.email %></h4>
+            <h4><%= s.phone %></h4>
+            <h4><%= s.college %></h4>
+            <h4><%= s.address %></h4></tr>
+        </table>
+
+        <a href="/students/<%= s._id %>/edit" type="button" class="btn btn-warning btn-small my-2"><i
+            class="bi bi-pencil"></i>Edit
+    </a>
+    <br>
+    <form action="/students/<%= s._id %>?_method=DELETE" method="POST"><button class="btn btn-sm btn-secondary">
+        <i class="bi bi-person-x"></i>Delete</button>
+    </form>
