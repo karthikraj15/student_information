@@ -1,22 +1,23 @@
 const express=require('express');
 const router=express.Router();
 
+const { isLoggedIn } = require('../middleware');
 const courses = require('../models/course');
 
 //all courses
-router.get('/',async(req,res)=>{
+router.get('/',isLoggedIn,async(req,res)=>{
     const c=await courses.find({});
    // res.render('courses/view-courses',{c});
 })
 
 
 //add course
-router.get('/new',async(req,res)=>{
+router.get('/new',isLoggedIn,async(req,res)=>{
    // res.render('courses/new-course');
 })
 
 //add post
-router.post('/',async(req,res)=>{
+router.post('/',isLoggedIn,async(req,res)=>{
     const c = new courses(req.body.course);
     await c.save();
     //res.redirect('/courses');
@@ -25,20 +26,20 @@ router.post('/',async(req,res)=>{
 
 
 //show a course
-router.get('/:id',async(req,res)=>{
+router.get('/:id',isLoggedIn,async(req,res)=>{
     const c = await courses.findById(req.params.id);
   //  res.render('courses/show-course',{c});
      res.send(c);
 })
 
 //render edit page
-router.get('/:id/edit',async(req,res)=>{
+router.get('/:id/edit',isLoggedIn,async(req,res)=>{
     const c = await courses.findById(req.params.id);
    // res.render('courses/edit-course',{c});
 })
 
 //edit 
-router.put('/:id',async(req,res)=>{
+router.put('/:id',isLoggedIn,async(req,res)=>{
     const {id}=req.params;
     const c = await courses.findByIdAndUpdate(id,{ ...req.body.course  });
     res.send("Updated");

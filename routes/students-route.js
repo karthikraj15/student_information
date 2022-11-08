@@ -1,12 +1,29 @@
 const express=require('express');
 const router=express.Router();
 
+const { isLoggedIn } = require('../middleware');
 const students = require('../models/student');
 
 //all students
-router.get('/',async(req,res)=>{
-    const stud=await students.find({});
-    res.render('students/view-students',{stud});
+router.get('/',isLoggedIn,async(req,res)=>{
+    const email= res.locals.user;
+    if(email===null){
+        return res.send("Login first")
+    }
+    let stud={}
+    if(email=="admin@gmail.com"){
+        stud=await students.find({});
+    }
+    else{
+        stud=await students.findOne({email:email});
+        if(!stud){
+            res.send("Your name does not exist in the database")
+        }
+        console.log(stud.id)
+        res.redirect(`/students/${stud.id}`)
+    }
+    res.send(stud)
+    //res.render('students/view-students',{stud});
 })
 
 

@@ -79,7 +79,4 @@ app.use('/students',students);
 app.use('/courses',courses);
 app.use('/',users);
 
-
-
-
 app.listen(port, () => console.log(`Listening on port ${port}`));

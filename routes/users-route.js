@@ -2,12 +2,13 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const User = require('../models/users');
+const catchAsync = require('../utils/catchAsync');
 
 router.get('/register', (req, res) => {
   //  res.render('users/register');
 });
 
-router.post('/register', async (req, res, next) => {
+router.post('/register', catchAsync(async (req, res, next) => {
     try {
         const { email, password } = req.body;
         const username = email;
@@ -22,7 +23,7 @@ router.post('/register', async (req, res, next) => {
         res.send(e);
        // res.redirect('register');
     }
-});
+}));
 
 router.get('/login', (req, res) => {
    // res.render('users/login');
