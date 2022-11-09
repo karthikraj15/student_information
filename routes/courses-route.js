@@ -8,6 +8,7 @@ const courses = require('../models/course');
 router.get('/',isLoggedIn,async(req,res)=>{
     const c=await courses.find({});
    // res.render('courses/view-courses',{c});
+    res.send(c);
 })
 
 
@@ -48,7 +49,7 @@ router.put('/:id',isLoggedIn,async(req,res)=>{
 
 
 //delete
-router.delete('/:id',async(req,res)=>{
+router.delete('/:id',isLoggedIn,async(req,res)=>{
     const {id}= req.params;
     await courses.findByIdAndDelete(id);
     res.send("deleted")

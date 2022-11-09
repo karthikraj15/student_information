@@ -5,7 +5,7 @@ const User = require('../models/users');
 const catchAsync = require('../utils/catchAsync');
 
 router.get('/register', (req, res) => {
-  //  res.render('users/register');
+    res.render('users/register');
 });
 
 router.post('/register', catchAsync(async (req, res, next) => {
@@ -16,29 +16,33 @@ router.post('/register', catchAsync(async (req, res, next) => {
         const registeredUser = await User.register(user, password);
         req.login(registeredUser, err => {
             if (err) return next(err);
-            res.send("Register & login Successful")
-          //  res.redirect('/mobile');
+            console.log("Register & login Successful")
+            res.redirect('/students');
         })
     } catch (e) {
-        res.send(e);
-       // res.redirect('register');
+        console.log(e.message);
+        res.redirect('register');
     }
 }));
 
 router.get('/login', (req, res) => {
-   // res.render('users/login');
+   res.render('users/login');
 })
 
 router.post('/login', 
   passport.authenticate('local', { failureRedirect: '/login' }),
   function(req, res) {
-    res.send("Login Succesful")
+    console.log("Login Succesful")
+    const redirectUrl = req.session.returnTo || '/students';
+    delete req.session.returnTo;
+    res.redirect(redirectUrl);
   });
 
 router.get('/logout', function(req, res, next) {
     req.logout(function(err) {
       if (err) { return next(err); }
-      res.send("Good bye")
+      console.log("Good bye")
+      res.redirect("/login")
     });
   });
 
