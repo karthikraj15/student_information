@@ -41,9 +41,11 @@
                 <a href="/students/<%= s._id %>/edit" type="button" class="btn btn-warning btn-small"><i
                         class="bi bi-pencil"></i>Edit
                 </a>
+                <%if(user==process.env.ADMIN){%>
                 <form action="/students/<%= s._id %>?_method=DELETE" method="POST"><button class="btn btn-sm btn-secondary my-2">
                   <i class="bi bi-person-x"></i>Delete</button>
               </form>
+              <%}%>
         </td>
     </tr>
    <% } %>

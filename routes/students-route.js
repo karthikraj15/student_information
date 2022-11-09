@@ -1,6 +1,5 @@
 const express=require('express');
 const router=express.Router();
-const passport = require('passport');
 const User = require('../models/users');
 
 const { isLoggedIn } = require('../middleware');
@@ -12,17 +11,14 @@ router.get('/',isLoggedIn,async(req,res)=>{
     let stud=[{}]
     if(email==process.env.ADMIN){
         stud=await students.find({});
+        console.log(stud)
+        res.render('students/view-students',{stud});
     }
     else{
-        stud=await students.findOne({email:email});
-        if(!stud){
-            res.send("Your email does not exist in the database")
-        }
+        stud=await students.findOne({email});
         console.log(stud.id)
-        return res.redirect(`/students/${stud.id}`)
+        res.redirect(`/students/${stud.id}`)
     }
-    console.log(stud)
-    res.render('students/view-students',{stud});
 })
 
 
@@ -36,11 +32,9 @@ router.post('/',isLoggedIn,async(req,res)=>{
     try{
         const stud = new students(req.body.student);
         await stud.save();
-        const email=req.body.student.email;
-        const password=req.body.student.usn;
-        const username = email;
-        const user = new User({ email,username });
-        await User.register(user, password);
+        const {email,usn}=req.body.student;
+        const user = new User({ email,username:email });
+        await User.register(user, usn);
         res.redirect('/students');
     }
     catch(err)
@@ -73,6 +67,9 @@ router.put('/:id',isLoggedIn,async(req,res)=>{
 //delete
 router.delete('/:id',isLoggedIn,async(req,res)=>{
     const {id}= req.params;
+    const s = await students.findById(id);
+    const email=s.email;
+    await User.findOneAndDelete({email})
     await students.findByIdAndDelete(id);
     res.redirect('/students');
 })

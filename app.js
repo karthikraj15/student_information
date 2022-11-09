@@ -64,7 +64,7 @@ app.use((req, res, next) => {
   res.locals.currentUser = req.user;
   res.locals.user = null;
   if (req.isAuthenticated()) {
-      res.locals.user = req.user.username;
+     res.locals.user = req.user.username;
   }
   next();
 })
