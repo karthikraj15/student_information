@@ -9,8 +9,6 @@ Currently on development stage
 * View/Modify personal details
 * View courses enrolled, and its status – waiting for approval or not-approved by admin
 * List new courses (with dates) and ability to request for enrollment of courses.
-
-
 * Admin can login using email-id
 * Create/Modify/Delete student & course details
 * Assign course to a student or selected students
