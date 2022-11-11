@@ -13,6 +13,7 @@ const User = require('./models/users');
 const students=require('./routes/students-route');
 const courses=require('./routes/courses-route');
 const users=require('./routes/users-route');
+const enroll=require('./routes/enroll-route');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -78,5 +79,6 @@ app.get('/', (req, res) => {
 app.use('/students',students);
 app.use('/courses',courses);
 app.use('/',users);
+app.use('/',enroll);
 
 app.listen(port, () => console.log(`Listening on port ${port}`));

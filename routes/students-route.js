@@ -8,14 +8,13 @@ const students = require('../models/student');
 //all students
 router.get('/',isLoggedIn,async(req,res)=>{
     const email= res.locals.user;
-    let stud=[{}]
     if(email==process.env.ADMIN){
-        stud=await students.find({});
+        const stud=await students.find({});
         console.log(stud)
         res.render('students/view-students',{stud});
     }
     else{
-        stud=await students.findOne({email});
+        const stud=await students.findOne({email});
         console.log(stud.id)
         res.redirect(`/students/${stud.id}`)
     }
@@ -59,7 +58,7 @@ router.get('/:id/edit',isLoggedIn,async(req,res)=>{
 //edit 
 router.put('/:id',isLoggedIn,async(req,res)=>{
     const {id}=req.params;
-    const student = await students.findByIdAndUpdate(id,{ ...req.body.student  });
+    await students.findByIdAndUpdate(id,{ ...req.body.student  });
     res.redirect('/students');
 });
 
