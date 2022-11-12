@@ -36,8 +36,7 @@ router.post('/',isLoggedIn,async(req,res)=>{
         await User.register(user, usn);
         res.redirect('/students');
     }
-    catch(err)
-    {
+    catch(err){
         console.log(err.message)
     }
 })

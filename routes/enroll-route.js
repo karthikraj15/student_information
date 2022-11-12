@@ -5,34 +5,34 @@ const { isLoggedIn } = require('../middleware');
 const enroll = require('../models/enroll');
 const students = require('../models/student');
 const courses = require('../models/course');
-const course = require('../models/course');
 
-
-router.post('/courses/:id/enroll',async(req,res)=>{
+//student part
+//student enrolling to a course
+router.post('/courses/:id/enroll',isLoggedIn,async(req,res)=>{
     const courseId=req.params.id;
     const studemail = res.locals.user;
     const stud= await students.findOne({email:studemail});
     const studId=stud.id;
     const c=await courses.findById(courseId);
     const courseName = c.name;
-    const exist = await enroll.findOne({studentId:studId})
-    if(!exist)
-    {
+    const enrollexist = await enroll.findOne({studentId:studId})
+    if(!enrollexist){
         const e= new enroll({studentId:studId});
         e.courses.push({_id:courseId,name:courseName});
         await e.save();
         res.send(e);
     }
     else{
-        exist.courses.push({_id:courseId,name:courseName});
-        await exist.save();
-        res.send(exist);
+        enrollexist.courses.push({_id:courseId,name:courseName});
+        await enrollexist.save();
+        res.send(enrollexist);
     }
     //res.redirect('/courses/);
 })
 
+//ADMIN part
 //all enrollments
-router.get('/enrolls',async(req,res)=>{
+router.get('/enrolls',isLoggedIn,async(req,res)=>{
     if(res.locals.user!=process.env.ADMIN){
        // res.redirect('/courses')
        res.send("U must be admin")
@@ -45,7 +45,9 @@ router.get('/enrolls',async(req,res)=>{
     
 })
 
-router.get('/enrolls/:id',async(req,res)=>{
+//ADMIN part
+//specific requests of a student (admin)
+router.get('/enrolls/:id',isLoggedIn,async(req,res)=>{
     if(res.locals.user!=process.env.ADMIN){
        // res.redirect('/courses')
        res.send("U must be admin")
@@ -61,7 +63,9 @@ router.get('/enrolls/:id',async(req,res)=>{
     }
 })
 
-router.put('/enrolls/:enrollId/:courseId',async(req,res)=>{
+//ADMIN part
+//approval of enrollment request of a student
+router.put('/enrolls/:enrollId/:courseId',isLoggedIn,async(req,res)=>{
     if(res.locals.user!=process.env.ADMIN){
         // res.redirect('/courses')
         res.send("U must be admin")
@@ -70,7 +74,6 @@ router.put('/enrolls/:enrollId/:courseId',async(req,res)=>{
         const {enrollId,courseId}=req.params;
         const c = await enroll.findById(enrollId);
         c.courses.pull({_id:courseId});
-        await c.save();
         const course=await courses.findById(courseId);
         const courseName = course.name;
         c.courses.push({_id:courseId,name:courseName,status:true});
@@ -78,5 +81,67 @@ router.put('/enrolls/:enrollId/:courseId',async(req,res)=>{
         res.redirect(`/enrolls/${enrollId}`);
     }
 })
+
+
+
+//student part
+//view enrolled courses and its status
+router.get('/enrolled-courses/:studId',isLoggedIn,async(req,res)=>{
+    if(res.locals.user==process.env.ADMIN){
+        //res.redirect('/enrolls');
+        res.send("Student viewing courses only")
+    }
+    else{
+        const studId=req.params.studId;
+        const enrolled = await enroll.findOne({studentId:studId});
+        const courses=enrolled.courses;
+        res.send(courses);
+    }
+})
+
+
+//Admin part
+//assign course to a student or selected students - view page
+router.get('/courses/:courseId/assign',isLoggedIn,async(req,res)=>{
+    if(res.locals.user!=process.env.ADMIN){
+        // res.redirect('/courses')
+        res.send("U must be admin")
+    }
+    else{
+        const {courseId}=req.params;
+        const stud=await students.find({});
+        res.send(stud)
+      //  res.render('courses/assign-students',{stud,courseId});
+    }
+})
+
+//Admin part
+//assign course to a student or selected students 
+router.post('/courses/:courseId/assign/:studId',isLoggedIn,async(req,res)=>{
+    if(res.locals.user!=process.env.ADMIN){
+        // res.redirect('/courses')
+        res.send("U must be admin")
+    }
+    else{
+        const {courseId,studId}=req.params;
+        const c=await courses.findById(courseId);
+        const courseName = c.name;
+
+        const enrollexist = await enroll.findOne({studentId:studId})
+        if(!enrollexist){
+            const e= new enroll({studentId:studId});
+            e.courses.push({_id:courseId,name:courseName,status:true});
+            await e.save();
+            res.send(e);
+        }
+        else{
+            enrollexist.courses.push({_id:courseId,name:courseName,status:true});
+            await enrollexist.save();
+            res.send(enrollexist);
+         }
+        //res.redirect(`/courses/:courseId/assign`)
+    }
+})
+
 
 module.exports = router;

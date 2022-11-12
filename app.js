@@ -15,6 +15,8 @@ const courses=require('./routes/courses-route');
 const users=require('./routes/users-route');
 const enroll=require('./routes/enroll-route');
 
+const ExpressError = require('./utils/ExpressError');
+
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -71,14 +73,26 @@ app.use((req, res, next) => {
 })
 
 
-app.get('/', (req, res) => {
-  res.render('home')
-});
-
 //routes
 app.use('/students',students);
 app.use('/courses',courses);
 app.use('/',users);
 app.use('/',enroll);
+
+
+
+app.get('/', (req, res) => {
+  res.render('home')
+});
+
+app.all('*', (req, res, next) => {
+  next(new ExpressError('Page Not Found', 404))
+})
+
+app.use((err, req, res, next) => {
+  const { statusCode = 500 } = err;
+  if (!err.message) err.message = 'Oh No, Something Went Wrong!'
+  res.status(statusCode).render('error', { err })
+})
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
