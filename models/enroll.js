@@ -9,7 +9,8 @@ const enrollSchema = new Schema({
     courses:[{
         courseId:{
             type:Schema.Types.ObjectId,
-            ref:'courses'
+            ref:'courses',
+            unique:true
         },
         name:String,
         status: {
