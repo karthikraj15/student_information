@@ -6,61 +6,61 @@ const { isLoggedIn } = require('../middleware');
 const catchAsync = require('../utils/catchAsync');
 
 const students = require('../models/student');
+const { json } = require('express');
 
 //all students
-router.get('/',isLoggedIn,catchAsync(async(req,res)=>{
+router.get('/',catchAsync(async(req,res)=>{
     const email= res.locals.user;
     if(email==process.env.ADMIN){
         const stud=await students.find({});
-        console.log(stud)
-        res.render('students/view-students',{stud});
+        res.status(200).json(stud)
+       // res.render('students/view-students',{stud});
     }
     else{
         const stud=await students.findOne({email});
-        console.log(stud.id)
-        res.redirect(`/students/${stud.id}`)
+         res.status(200).json(stud)
+     //  res.redirect(`/students/${stud.id}`)
     }
 }))
 
 
 //add student
 router.get('/new',isLoggedIn,catchAsync(async(req,res)=>{
-    res.render('students/new-student');
+  //  res.render('students/new-student');
 }))
 
 //add post
 router.post('/',isLoggedIn,catchAsync(async(req,res)=>{
-    try{
         const stud = new students(req.body.student);
         await stud.save();
         const {email,usn}=req.body.student;
         const user = new User({ email,username:email });
         await User.register(user, usn);
-        res.redirect('/students');
-    }
-    catch(err){
-        console.log(err.message)
-    }
+        res.status(200).json(stud)
+      //  res.redirect('/students');
 }))
 
 
 //show a student
 router.get('/:id',isLoggedIn,catchAsync(async(req,res)=>{
-    const s = await students.findById(req.params.id);
-    res.render('students/show-student',{s});
+    const stud = await students.findById(req.params.id);
+    res.status(200).json(stud)
+   // res.render('students/show-student',{s});
 }))
 
 //render edit page
 router.get('/:id/edit',isLoggedIn,catchAsync(async(req,res)=>{
-    const s = await students.findById(req.params.id);
-    res.render('students/edit-student',{s});
+    const stud = await students.findById(req.params.id);
+   // res.status(200).json(stud)
+   // res.render('students/edit-student',{s});
 }))
 
 //edit 
 router.put('/:id',isLoggedIn,catchAsync(async(req,res)=>{
     const {id}=req.params;
-    await students.findByIdAndUpdate(id,{ ...req.body.student  });
-    res.redirect('/students');
+    const stud=await students.findByIdAndUpdate(id,{ ...req.body.student  });
+    res.status(200).json(stud)
+   // res.redirect('/students');
 }))
 
 
@@ -71,7 +71,8 @@ router.delete('/:id',isLoggedIn,catchAsync(async(req,res)=>{
     const email=s.email;
     await User.findOneAndDelete({email})
     await students.findByIdAndDelete(id);
-    res.redirect('/students');
+    res.status(200).json("Student record deleted")
+  //  res.redirect('/students');
 }))
 
 module.exports = router;
